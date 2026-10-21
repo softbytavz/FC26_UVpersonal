@@ -60,7 +60,7 @@ if st.sidebar.button("Buscar por liga"):
 def filtrar_por_calificacion(df, minimo, maximo):
     return df[(df["overall"] >= minimo) & (df["overall"] <= maximo)]
 
-cal_min, cal_max = st.sidebar.slider("Calificación global:", 40, 99, (40, 99))
+cal_min, cal_max = st.sidebar.slider("Calificación global:", 57, 91, (57, 91))
 if st.sidebar.button("Buscar por calificación"):
     resultado = filtrar_por_calificacion(FC26_data, cal_min, cal_max)
     st.subheader("Resultado de la búsqueda")
