@@ -75,9 +75,11 @@ st.header("Cantidad de jugadores y su  calificación global")
 st.pyplot(fig)
 
 fig2, ax2 = plt.subplots()
-y_pos = FC26_data['short_name'].head(10)
-x_pos = FC26_data['overall'].head(10)
+top10 = FC26_data.nlargest(10, "overall")
+y_pos = top10['short_name']
+x_pos = top10['overall']
 ax2.barh(y_pos, x_pos)
+ax2.invert_yaxis()   # el mejor queda arriba
 ax2.set_ylabel("Jugador")
 ax2.set_xlabel("Calificación global")
 ax2.set_title("Calificación global de 10 jugadores")
