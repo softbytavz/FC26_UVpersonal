@@ -10,7 +10,6 @@ def load_data(nrows=6820):
 FC26_data = load_data()
 
 st.header("FC 26 data")
-st.dataframe(FC26_data)
 
 if st.sidebar.checkbox("Mostrar todos los datos"):
     st.subheader("Todos los datos")
@@ -47,39 +46,62 @@ if st.sidebar.button("Buscar por edad"):
     st.write(f"Total de jugadores: {resultado.shape[0]}")
     st.dataframe(resultado)
 
-def filtrar_por_pie(df, pie):
-    return df[df["preferred_foot"] == pie]
+def filtrar_por_liga(df, liga):
+    return df[df["league_name"] == liga]
 
-pie = st.sidebar.radio("Pie preferido:", ["Right", "Left"])
-if st.sidebar.button("Buscar por pie"):
-    resultado = filtrar_por_pie(FC26_data, pie)
+ligas = sorted(FC26_data["league_name"].dropna().unique())
+liga = st.sidebar.selectbox("Liga:", ligas)
+if st.sidebar.button("Buscar por liga"):
+    resultado = filtrar_por_liga(FC26_data, liga)
     st.subheader("Resultado de la búsqueda")
     st.write(f"Total de jugadores: {resultado.shape[0]}")
-    st.dataframe(resultado)
+    st.dataframe(resultado) 
+
+def filtrar_por_calificacion(df, minimo, maximo):
+    return df[(df["overall"] >= minimo) & (df["overall"] <= maximo)]
+
+cal_min, cal_max = st.sidebar.slider("Calificación global:", 40, 99, (40, 99))
+if st.sidebar.button("Buscar por calificación"):
+    resultado = filtrar_por_calificacion(FC26_data, cal_min, cal_max)
+    st.subheader("Resultado de la búsqueda")
+    st.write(f"Total de jugadores: {resultado.shape[0]}")
+    st.dataframe(resultado)   
 
 fig, ax = plt.subplots()
 ax.hist(FC26_data["overall"], bins=20)
 ax.set_xlabel("Calificación global")
 ax.set_ylabel("Cantidad de jugadores")
-st.header("¿Qué tan buenos son la mayoría de los jugadores?")
+st.header("Cantidad de jugadores y su  calificación global")
 st.pyplot(fig)
 
-clubes = FC26_data.groupby("club_name")["overall"].agg(["mean", "count"])
-clubes = clubes[clubes["count"] >= 10]
-top_clubes = clubes["mean"].sort_values(ascending=False).head(10)
-
 fig2, ax2 = plt.subplots()
-ax2.barh(top_clubes.index, top_clubes.values)
-ax2.invert_yaxis()
-ax2.set_xlim(top_clubes.min() - 5, top_clubes.max() + 1)
-ax2.set_xlabel("Calificación global promedio")
-ax2.set_ylabel("Club")
-st.header("Top 10 clubes con mejor calificación promedio")
+y_pos = FC26_data['short_name'].head(10)
+x_pos = FC26_data['overall'].head(10)
+ax2.barh(y_pos, x_pos)
+ax2.set_ylabel("Jugador")
+ax2.set_xlabel("Calificación global")
+ax2.set_title("Calificación global de 10 jugadores")
+st.header("Top 10 jugadores")
 st.pyplot(fig2)
 
 fig3, ax3 = plt.subplots()
-ax3.scatter(FC26_data["overall"], FC26_data["value_eur"] / 1_000_000, alpha=0.3)
-ax3.set_xlabel("Calificación global")
-ax3.set_ylabel("Valor (millones de euros)")
-st.header("Calificación global vs. valor de mercado")
+ax3.scatter(FC26_data.age, FC26_data.potential)
+ax3.set_xlabel("Edad")
+ax3.set_ylabel("Potencial")
+st.header("Edad y Potencial")
 st.pyplot(fig3)
+
+
+st.title("Antonio Yaset Calderón Aquino")
+st.header("Matrícula: S26004634")
+st.header("Mapa aquí abajo 👇")
+
+map_data = pd.DataFrame(
+  np.random.randn(1, 2) / [500, 500] + [18.8033, -97.1808],
+  columns=['lat', 'lon'])
+
+st.title("Ciudad Mendoza, Ver.")
+st.header("Mendozayork 🗽")
+st.header("CP: 94740")
+
+st.map(map_data)
